@@ -8,13 +8,17 @@
 			<uri>model://sun</uri>
 		</include>
 		<include>
+			<uri>model://human_male_1</uri>
+		</include>	
+		<include>
 			<uri>model://house</uri>			
 		</include>
 		<actor name="actor">
-      	<skin>
-       	 <filename>stand.dae</filename>
-      	</skin>
-    </actor>
+			<skin>
+			<filename>stand.dae</filename>
+			</skin>
+   		 </actor>
+
 		<physics type='ode'>
 			<max_step_size>0.001</max_step_size>
 			<real_time_factor>1</real_time_factor>

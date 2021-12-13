@@ -219,8 +219,13 @@ bool Docking_Station_Simulation::validateDocking(geometry_msgs::PoseStamped robo
   anguler_diff_quaternion.z = robot2station_connectors.pose.orientation.z;
   anguler_diff_quaternion.w = robot2station_connectors.pose.orientation.w;
   float anguler_diff = fabs(quaternion2yaw(anguler_diff_quaternion));
+  anguler_diff = fabs( M_PI - anguler_diff);
 
   bool docking_flag = false;
+
+  // ROS_INFO("diff trans: %f(<%f), diff and: %f(<%f)", translation_diff, docking_area_radious, anguler_diff, docking_area_angle);
+
+
   // 距離と角度がしきい値以内ならばdocking_fragをtrueにする
   if( translation_diff < docking_area_radious && anguler_diff < docking_area_angle){
     docking_flag = true;

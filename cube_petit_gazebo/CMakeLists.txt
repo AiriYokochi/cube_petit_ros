@@ -12,6 +12,7 @@ add_compile_options(-std=c++11)
 # package.xml の<build_depend>と同じものをかく
 find_package(catkin REQUIRED COMPONENTS
   roscpp
+  roslib
   rospy
   std_msgs
   tf
@@ -34,9 +35,10 @@ generate_messages(
 
 # Macro to generate ROS node with "add_executable" and "add_library"
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES ${PROJECT_NAME} brass_gazebo_battery
+  INCLUDE_DIRS include 
+  LIBRARIES ${PROJECT_NAME}
   CATKIN_DEPENDS
+  brass_gazebo_battery
   roscpp
   message_runtime
 )
@@ -53,20 +55,6 @@ include_directories(
  ${GAZEBO_INCLUDE_DIRS}
 )
 
-
-# add_executable(${PROJECT_NAME}_node
-#   src/battery_charge_simulation.cpp
-#   src/docking_station_simulation.cpp
-# )
-
-# add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-
-# ### Specify libraries to link a library or executable target against
-# target_link_libraries(${PROJECT_NAME}_node
-#   ${catkin_LIBRARIES}
-#   ${roscpp_LIBRARIES}
-#   ${GAZEBO_INCLUDE_DIRS}
-# )
 
 add_executable(docking_station_simulation_node
   src/docking_station_simulation.cpp
