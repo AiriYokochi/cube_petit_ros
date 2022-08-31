@@ -24,7 +24,8 @@
     </node>
   </group>
  
-  <!-- <include file="$(find cube_petit_bringup)/launch/realsense_rgbd.launch"/> -->
+ <!-- imaha iranai -->
+  <include file="$(find cube_petit_bringup)/launch/realsense_rgbd.launch"/>
 
   <include file="$(find cube_petit_bringup)/launch/rear_camera_bringup.launch"/>
 
@@ -45,9 +46,10 @@
   </include>
 
   <include file="$(find cube_speech)/launch/speech_server.launch"/>
-
   <include file="$(find cube_petit_text_to_speech)/launch/cube_petit_text_to_speech.launch"/>
   <include file="$(find cube_petit_speech_to_text)/launch/cube_petit_speech_to_text.launch"/>
+
+  <include file="$(find wt901B_ros)/launch/wt901B_ros.launch"/>
 
 
 </launch>

@@ -27,6 +27,6 @@
   <node name="ar_docking_server" pkg="cube_petit_ar_docking" type="cube_petit_ar_docking_node" output="screen">
     <rosparam command="load" file="$(find cube_petit_ar_docking)/config/docking/cube_petit.yaml"/>
   </node> 
-  <include file="$(find cube_speech)/launch/speech_server.launch"/>
+  <!-- <include file="$(find cube_speech)/launch/speech_server.launch"/> -->
 
 </launch>
