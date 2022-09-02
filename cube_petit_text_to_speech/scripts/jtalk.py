@@ -110,16 +110,18 @@ def callback(data):
         rospy.loginfo("○")
     elif data.buttons[2] == 1:    # sankaku
         rospy.loginfo("△")
-        text_to_jtalk_shout('ねえねえ')
+        text_to_jtalk('はいどうも')
         # rate.sleep()
     elif data.buttons[3] == 1:    # sikaku
         rospy.loginfo("□")
-        text_to_jtalk('こっち来て')
+        text_to_jtalk('ハローワールド！僕の名前はキューブプチです！')
         # rate.sleep()
     elif data.buttons[4] == 1:    # L1
         rospy.loginfo("L1")
+        text_to_jtalk('こっち来てえ') 
     elif data.buttons[5] == 1:    # R1
         rospy.loginfo("R1")
+        text_to_jtalk_shout('ねえねえ')
     elif data.buttons[6] == 1:    # L2
         rospy.loginfo("L2")
     elif data.buttons[7] == 1:    # R2
@@ -135,18 +137,77 @@ def callback(data):
         status = os.system('amixer -D pulse sset Capture 0')
         rospy.loginfo('mute mic')
         rospy.sleep(0.5)
+        julius_text = julius_text.rstrip('です')
+        julius_text = julius_text.rstrip('だよ')
         if julius_text != '':
-            julius_text = julius_text + "ですね？"
-            text_to_jtalk(julius_text)
+            if julius_text == "キューブプチ":
+                text_to_jtalk("僕は食べられないよう！")
+            elif julius_text == "キューボイド":
+                text_to_jtalk("キューボイドは僕のお兄ちゃんの名前ですよ")
+                julius_text = julius_text + "ですね？"
+            elif julius_text == "大根" or julius_text == "じゃがいも" or julius_text == "アスパラガス" or julius_text == "たけのこ":
+                # レンコン かぼちゃ アスパラ ブロッコリー
+                # アボカド
+                # たまねぎ
+                # じゃがいも
+                # そらまめ
+                # とうもろこし
+                # 白菜
+                # キャベツ
+                # ピーマン
+                # ナス
+                # 筍
+                # そら豆
+                # えんどう豆
+                # オクラ
+                julius_text = julius_text + "は僕も大好きです！"
+                text_to_jtalk(julius_text)
+            else:
+                julius_text = julius_text + "ですね？"
+                text_to_jtalk(julius_text)
             julius_text = ''
         else:
             text_to_jtalk_sadness("わかりませんでした")
 
 
     elif data.buttons[9] == 1:    # OPTION
-        rospy.loginfo("OPTION")
+        text_to_jtalk('音声認識モード。ポンッ！')
+        julius_text = ''
+        status = os.system('amixer -D pulse sset Capture 40000')
+        rospy.loginfo('unmute mic')
+        rospy.sleep(5.5)
+        status = os.system('amixer -D pulse sset Capture 0')
+        rospy.loginfo('mute mic')
+        rospy.sleep(0.5)
+        if julius_text != '':
+            if julius_text == "キューブプチ":
+                text_to_jtalk("はぁあい！なんですか？")
+            elif julius_text == "キューボイド":
+                text_to_jtalk("キューボイドは僕のお兄ちゃんの名前ですよ")
+            elif julius_text.find("何時") or julius_text.find("時刻") or julius_text.find("時間"):
+                d = datetime.now()
+                phrase1 = '今は%s月%s日、%s時%s分%s秒です。' % (d.month, d.day, d.hour, d.minute, d.second)
+                text_to_jtalk(phrase1)
+            elif julius_text.find("名前"):
+                text_to_jtalk("僕の名前はキューブプチです。あなたの名前はなんですか")
+                julius_text = ''
+                status = os.system('amixer -D pulse sset Capture 40000')
+                rospy.loginfo('unmute mic')
+                rospy.sleep(5.5)
+                status = os.system('amixer -D pulse sset Capture 0')
+                rospy.loginfo('mute mic')
+                rospy.sleep(0.5)
+                julius_text = julius_text + "さんですね。素敵な名前ですね。"
+                text_to_jtalk(julius_text)
+            else:
+                julius_text = julius_text + "ですね？"
+                text_to_jtalk(julius_text)
+            julius_text = ''
+        else:
+            text_to_jtalk_sadness("わかりませんでした")
     elif data.buttons[10] == 1:    # PS
         rospy.loginfo("PS Button")
+        text_to_jtalk("ブウス番号エイチの３でデモやってます！来てね")
     elif data.buttons[11] == 1:    # Left Stick
         rospy.loginfo("Left Stick")
     elif data.buttons[12] == 1:    # Right Stick
