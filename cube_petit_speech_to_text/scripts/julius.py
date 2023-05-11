@@ -42,7 +42,8 @@ class juliusSpeechToText:
 
     def textStreaming(self):
         for line in iter(self.julius_process.stdout.readline, ""):
-            out_string = line.replace("\n", " ")
+            out_string = line.decode().replace("\n", " ")
+            print(out_string)
             # rospy.loginfo('\njulius_text RAW ->:\n' + out_string + '\n<-:julius_text RAW\n' )
             find_text_flag = out_string.find('sentence1:')
             find_pass_flag = out_string.find('pass1_best:')
@@ -54,6 +55,7 @@ class juliusSpeechToText:
                 if text_string != '。' and len(text_string) > 3:
                     # rospy.loginfo('\njulius_text: OUTPUT\n'+ text_string + '\n')
                     publish.publish(text_string)
+                    print(text_string)
             elif find_pass_flag != -1 and find_short_text_flag != -1:
                 # rospy.loginfo('\njulius_text SHORT RAW ->:\n'+ out_string + '\n<-:julius_text SHORT RAW\n')
                 text_string = out_string.replace("pass1_best:", "")
@@ -63,6 +65,7 @@ class juliusSpeechToText:
                 if text_string != '。' and len(text_string) > 3:
                     # rospy.loginfo('\njulius_text SHORT OUTPUT:\n'+ text_string + '\n' + str(len(text_string)) + '\n')
                     publish.publish(text_string)
+                    print(text_string)
             text_string=''
             out_string=''
         line=''

@@ -64,10 +64,11 @@ void Cube_Petit_Hardware_Interface::read(){
   //std::lock_guard<std::mutex> lock(mutex);  //ロックする
   // ROS_INFO("Cube_Petit_Hardware_Interface::read -> START");
   std::vector<double> status;
-  status.resize(dji_can_.status_size_, 0);
+  status.resize(dji_can_.status_size_+2, 0);
 
   // 
   dji_can_.updateMotorStatus(status);
+
 
   // copies and updates the status
   position_.at(LEFT)  = status.at(POSITION_LEFT);
@@ -76,6 +77,7 @@ void Cube_Petit_Hardware_Interface::read(){
   position_.at(RIGHT) = status.at(POSITION_RIGHT);
   velocity_.at(RIGHT) = status.at(VELOCITY_RIGHT);
   effort_.at(RIGHT)   = status.at(EFFORT_RIGHT);
+
 
   //モータの向きを逆にする
   //atは引数番目の要素を取得する
@@ -89,6 +91,7 @@ void Cube_Petit_Hardware_Interface::read(){
     effort_.at(RIGHT) *= - 1.0;
     velocity_.at(RIGHT) *= -1.0;
   }
+
   // ROS_INFO("Cube_Petit_Hardware_Interface::read   -> position %f, %f", position_.at(LEFT), position_.at(RIGHT));
   // ROS_INFO("Cube_Petit_Hardware_Interface::read   -> velocity %f, %f", velocity_.at(LEFT), velocity_.at(RIGHT));
   // ROS_INFO("Cube_Petit_Hardware_Interface::read   -> effort %f, %f", effort_.at(LEFT), effort_.at(RIGHT));

@@ -10,33 +10,34 @@ from datetime import datetime
 import struct, time
 import os
 from std_msgs.msg import String
-
-# 
+from std_msgs.msg import Bool
+#
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Int32
 
-# module_name, package_name, ClassName, method_name, 
+# module_name, package_name, ClassName, method_name,
 # ExceptionName, function_name, GLOBAL_CONSTANT_NAME
 # global_var_name, instance_var_name, function_parameter_name, local_var_name.
 
 # init [TODO] Class
-rospy.loginfo("------------------------------------------1")
+rospy.loginfo("------------------------------------------")
 rospy.init_node('cube_petit_text_to_speech')
 
-rospy.wait_for_service('speech_server')
+rospy.wait_for_service('speech_service')
 try:
-    speaker = rospy.ServiceProxy('speech_server', CallSpeech)
+    speaker = rospy.ServiceProxy('speech_service', CallSpeech)
 except rospy.ServiceException:
     rospy.loginfo("Fail.")
 
 # 1Hz
-rate = rospy.Rate(10) 
+rate = rospy.Rate(10)
 
 # instance_var_name [TODO] param or smtng easy
 emotion = 'happiness'
 pitch = 130
 speed = 100
-speech_method = 'jtalk'  
+volume = 100
+speech_method = 'jtalk'
 
 
 # Class method1: text_to_jtalk
@@ -44,7 +45,7 @@ def text_to_jtalk(phrase):
     emotion = 'happiness'
     rospy.loginfo('Speech Happily: ' + phrase)
     result = speaker(
-        phrase, speech_method, emotion, None, pitch, speed).result
+        phrase, speech_method, emotion, None, pitch, speed, 100).result
     if not result:
         rospy.loginfo('Speech failed for some unknown reason')
     else:
@@ -56,7 +57,7 @@ def text_to_jtalk_sadness(phrase):
     emotion = 'sadness'
     rospy.loginfo('Speech Sadly: ' + phrase)
     result = speaker(
-        phrase, speech_method, emotion, None, pitch, speed).result
+        phrase, speech_method, emotion, None, pitch, speed, 100).result
     if not result:
         rospy.loginfo('Speech failed for some unknown reason')
     else:
@@ -67,7 +68,7 @@ def text_to_jtalk_shout(phrase):
     emotion = 'shout'
     rospy.loginfo('Speech Shout: ' + phrase)
     result = speaker(
-        phrase, speech_method, emotion, None, pitch, speed).result
+        phrase, speech_method, emotion, None, pitch, speed, 100).result
     if not result:
         rospy.loginfo('Speech failed for some unknown reason')
     else:
@@ -81,6 +82,11 @@ hight_height_flag = 0
 low_height_flag = 0
 middle_height_flag = 0
 
+true_count = 0
+false_count = 0
+
+motion_sensor_flag = 0
+imu_flag = 0
 
 def julius_callback(phrase):
     global julius_text
@@ -89,25 +95,44 @@ def julius_callback(phrase):
 def imu_callback(data):
     global hight_height_flag
     global low_height_flag
-    if(data.data > 50 and hight_height_flag == 0):
-        text_to_jtalk("高いよう")
-        hight_height_flag = 1
-    elif(data.data < -50 and  low_height_flag == 0):
-        text_to_jtalk("低いよう")
-        low_height_flag = 1
-    elif(data.data <= 30 and data.data >= -30):
-        hight_height_flag = 0
-        low_height_flag = 0
+    global imu_flag
+    if(imu_flag > 0):
+        if(data.data > 50 and hight_height_flag == 0):
+            text_to_jtalk("高いよう")
+            hight_height_flag = 1
+        elif(data.data < -50 and  low_height_flag == 0):
+            text_to_jtalk("低いよう")
+            low_height_flag = 1
+        elif(data.data <= 30 and data.data >= -30):
+            hight_height_flag = 0
+            low_height_flag = 0
+
+
+def motion_sensor_callback(data):
+    global true_count
+    global false_count
+    global motion_sensor_flag
+    if(motion_sensor_flag > 0):
+        if(data.data == True):
+            true_count = true_count + 1
+            if( true_count > 20 and false_count > 0):
+                true_count = 0
+                false_count = 0
+                text_to_jtalk("やっほー！来てくれてありがとう、仲良くしてね")
+        else:
+            false_count = false_count + 1
 
 
 # Class method2: joyCallback [TODO] MUTEX
 def callback(data):
     global julius_text
+    global motion_sensor_flag
+    global imu_flag
     if data.buttons[0] == 1:      # batu
         rospy.loginfo("X")
         text_to_jtalk('こんにちは')
-    elif data.buttons[1] == 1:    # maru
-        rospy.loginfo("○")
+    # elif data.buttons[1] == 1:    # maru
+        # rospy.loginfo("○")
     elif data.buttons[2] == 1:    # sankaku
         rospy.loginfo("△")
         text_to_jtalk('はいどうも')
@@ -118,10 +143,10 @@ def callback(data):
         # rate.sleep()
     elif data.buttons[4] == 1:    # L1
         rospy.loginfo("L1")
-        text_to_jtalk('こっち来てえ') 
+        text_to_jtalk('こっち来てえ')
     elif data.buttons[5] == 1:    # R1
         rospy.loginfo("R1")
-        text_to_jtalk_shout('ねえねえ')
+        text_to_jtalk('ねえねえ')
     elif data.buttons[6] == 1:    # L2
         rospy.loginfo("L2")
     elif data.buttons[7] == 1:    # R2
@@ -207,11 +232,25 @@ def callback(data):
             text_to_jtalk_sadness("わかりませんでした")
     elif data.buttons[10] == 1:    # PS
         rospy.loginfo("PS Button")
-        text_to_jtalk("ブウス番号エイチの３でデモやってます！来てね")
+        # マイクミュート
+        status = os.system('amixer -D pulse sset Capture 0')
+        rospy.loginfo('mute mic')
     elif data.buttons[11] == 1:    # Left Stick
         rospy.loginfo("Left Stick")
+        if(imu_flag==0):
+            text_to_jtalk("高さ検知機能オン")
+            imu_flag = 1
+        else:
+            text_to_jtalk("高さ検知機能オフ")
+            imu_flag = 0
     elif data.buttons[12] == 1:    # Right Stick
         rospy.loginfo("Right Stick")
+        if(motion_sensor_flag==0):
+            text_to_jtalk("モーションセンサーオン")
+            motion_sensor_flag = 1
+        else:
+            text_to_jtalk("モーションセンサーオフ")
+            motion_sensor_flag = 0    
     elif data.axes[6] == 1.0:    # Left Cross Button
         rospy.loginfo("Left Cross Button")
         text_to_jtalk('一緒に写真を撮ろう！')
@@ -226,12 +265,13 @@ def callback(data):
         text_to_jtalk('お疲れ様！今日はどんな一日だった？')
 
 
-# start 
+# start
 
 # talk test
+rospy.loginfo('テストテスト。おはようございます。')
 phrase = 'テストテスト。おはようございます。'
 result = speaker(
-    phrase, speech_method, emotion, None, pitch, speed).result
+    phrase, speech_method, emotion, None, pitch, speed, volume).result
 if not result:
     rospy.loginfo('Speech failed for some unknown reason')
 else:
@@ -241,7 +281,7 @@ else:
 d = datetime.now()
 phrase1 = '今は%s月%s日、%s時%s分%s秒です。起動しました' % (d.month, d.day, d.hour, d.minute, d.second)
 result = speaker(
-    phrase1, speech_method, emotion, None, pitch, speed).result
+    phrase1, speech_method, emotion, None, pitch, speed, volume).result
 if not result:
     rospy.loginfo('Speech failed for some unknown reason')
 else:
@@ -249,7 +289,8 @@ else:
 
 rospy.Subscriber("/joystick/joy",Joy,callback, queue_size=1)
 rospy.Subscriber("/imu_height",Int32,imu_callback, queue_size=10)
-rospy.Subscriber("/julius_result_text", String, julius_callback, queue_size=1) 
+rospy.Subscriber("/julius_result_text", String, julius_callback, queue_size=1)
+rospy.Subscriber("/motion_sensor", Bool, motion_sensor_callback, queue_size=1)
 
 
 status = os.system('amixer -D pulse sset Capture 0')

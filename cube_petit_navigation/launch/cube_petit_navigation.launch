@@ -5,7 +5,7 @@
   <rosparam command="delete" param="map_info/building_id"/>
   <rosparam command="delete" param="map_info/floor_id"/> -->
   <group ns="navigation">
-    
+
     <!--[EDIT] robot name-->
     <arg name="robot" default="cube_petit"/>
     <!--[EDIT] topic name of /scan-->
@@ -18,14 +18,16 @@
 
     <!-- <arg name="map_file" default="$(find cube_petit_gazebo)/map/floor_eight/map.yaml"/> -->
     <!-- <arg name="map_file" default="$(find cube_petit_navigation)/map/airi_v2/map.yaml"/> -->
-    <!-- <arg name="map_file" default="$(find cube_petit_navigation)/map/floor_27_2/3/map.yaml"/> -->
+    <arg name="map_file" default="$(find cube_petit_navigation)/map/floor_27_2/3/map.yaml"/>
 
-    <arg name="map_file" default="$(find cube_petit_navigation)/map/maker_fair/map.yaml"/>
+    <!-- <arg name="map_file" default="$(find cube_petit_navigation)/map/maker_fair/map.yaml"/> -->
+    <!-- <arg name="map_file" default="/home/gisen/test_map/27fmap.yaml"/> -->
 
 
     <!-- [EDIT] keepout map file name if you need -->
-    <!-- <arg name="map_keepout_file" default="$(find cube_petit_navigation)/map/floor_27_2/3/map.yaml" /> -->
-    <arg name="map_keepout_file" default="$(find cube_petit_navigation)/map/maker_fair/map.yaml" />
+    <arg name="map_keepout_file" default="$(find cube_petit_navigation)/map/floor_27_2/3/map.yaml" />
+    <!-- <arg name="map_keepout_file" default="$(find cube_petit_navigation)/map/maker_fair/map.yaml" /> -->
+    <!-- <arg name="map_keepout_file" default="/home/gisen/test_map/27fmap.yaml"/> -->
     <arg name="use_keepout" default="true" />
     <param name="map_server/map_file" value="$(arg map_file)" />
 
@@ -55,7 +57,7 @@
     <!-- localize the robot -->
 
     <include file="$(arg amcl_include)">
-      <arg name="scan_topic" value="$(arg scan)"/>  
+      <arg name="scan_topic" value="$(arg scan)"/>
     </include>
 
     <group ns="rviz_topics_relay">
@@ -75,7 +77,7 @@
       <remap from="move_base_simple/goal" to="/move_base_simple/goal"/>
       <remap from="initial_pose" to="/initial_pose"/>
       <remap from="clicked_point" to="/clicked_point"/>
-      
+
     </include>
   </group>
 

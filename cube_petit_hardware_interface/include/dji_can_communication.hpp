@@ -5,7 +5,7 @@
 #include <ros/ros.h>
 #include <std_msgs/String.h>
 #include <sensor_msgs/JointState.h>
-#include "can_msgs/Frame.h"
+#include <can_msgs/Frame.h>
 
 #include <mutex>
 #include <stdio.h>
