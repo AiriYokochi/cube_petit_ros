@@ -14,6 +14,7 @@ from std_msgs.msg import Bool
 #
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Int32
+from std_msgs.msg import Float64
 import re
 
 # module_name, package_name, ClassName, method_name,
@@ -78,7 +79,7 @@ def text_to_jtalk_shout(phrase):
 
 
 julius_text = ''
-
+battery_voltage = 0
 hight_height_flag = 0
 low_height_flag = 0
 middle_height_flag = 0
@@ -124,12 +125,16 @@ def motion_sensor_callback(data):
         else:
             false_count = false_count + 1
 
+def battery_callback(data):
+    global battery_voltage
+    battery_voltage = data.data
 
 # Class method2: joyCallback [TODO] MUTEX
 def callback(data):
     global julius_text
     global motion_sensor_flag
     global imu_flag
+    global battery_voltage
     if data.buttons[0] == 1:      # batu
         rospy.loginfo("X")
         text_to_jtalk('こんにちは')
@@ -238,6 +243,13 @@ def callback(data):
                 rospy.sleep(0.5)
                 julius_text = julius_text + "さんですね。素敵な名前ですね。"
                 text_to_jtalk(julius_text)
+            elif ("電圧" in julius_text) or ("バッテリ" in julius_text):
+                julius_text = "バッテリの電圧は" + str(battery_voltage) + "です"
+                text_to_jtalk(julius_text)
+            elif ("扇風機" in julius_text) or ("ファン" in julius_text)or ("サーキュレーター" in julius_text):
+                julius_text = "おっけー"
+                text_to_jtalk(julius_text)
+                publish.publish(True)
             else:
                 julius_text = julius_text + "ですね？"
                 text_to_jtalk(julius_text)
@@ -305,9 +317,9 @@ rospy.Subscriber("/joystick/joy",Joy,callback, queue_size=1)
 rospy.Subscriber("/imu_height",Int32,imu_callback, queue_size=10)
 rospy.Subscriber("/julius_result_text", String, julius_callback, queue_size=1)
 rospy.Subscriber("/motion_sensor", Bool, motion_sensor_callback, queue_size=1)
+rospy.Subscriber("/gazebo_battery_monitor/battery_voltage", Float64, battery_callback, queue_size=1)
 
-
-
+publish = rospy.Publisher('/fan_on', Bool, queue_size=1)
 
 status = os.system('amixer -D pulse sset Capture 0')
 rospy.loginfo('mute mic')
