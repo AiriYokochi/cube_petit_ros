@@ -14,6 +14,7 @@ from std_msgs.msg import Bool
 #
 from sensor_msgs.msg import Joy
 from std_msgs.msg import Int32
+import re
 
 # module_name, package_name, ClassName, method_name,
 # ExceptionName, function_name, GLOBAL_CONSTANT_NAME
@@ -204,11 +205,23 @@ def callback(data):
         status = os.system('amixer -D pulse sset Capture 0')
         rospy.loginfo('mute mic')
         rospy.sleep(0.5)
+        rospy.loginfo('julius_text:'+julius_text)
         if julius_text != '':
             if julius_text == "キューブプチ":
                 text_to_jtalk("はぁあい！なんですか？")
             elif julius_text == "キューボイド":
                 text_to_jtalk("キューボイドは僕のお兄ちゃんの名前ですよ")
+            elif julius_text.find("コントローラ"):
+                julius_text = ''
+                battery_status_result = subprocess.check_output('upower --show-info /org/freedesktop/UPower/devices/gaming_input_sony_controller_battery_88o03o4co2bo6fo06 | grep percentage| sed -e \'s/[^0-9]//g\'', shell=True)
+                num_str = str(battery_status_result)
+                num_str = re.sub(r'\D', '', num_str)
+                if num_str != '':
+                    julius_text = "バッテリ残量は" + num_str + "パーセントです"
+                    text_to_jtalk(julius_text)
+                else:
+                    julius_text = "コントローラが繋がっていません"
+                    text_to_jtalk(julius_text)
             elif julius_text.find("何時") or julius_text.find("時刻") or julius_text.find("時間"):
                 d = datetime.now()
                 phrase1 = '今は%s月%s日、%s時%s分%s秒です。' % (d.month, d.day, d.hour, d.minute, d.second)
@@ -250,7 +263,7 @@ def callback(data):
             motion_sensor_flag = 1
         else:
             text_to_jtalk("モーションセンサーオフ")
-            motion_sensor_flag = 0    
+            motion_sensor_flag = 0
     elif data.axes[6] == 1.0:    # Left Cross Button
         rospy.loginfo("Left Cross Button")
         text_to_jtalk('一緒に写真を撮ろう！')
@@ -291,6 +304,8 @@ rospy.Subscriber("/joystick/joy",Joy,callback, queue_size=1)
 rospy.Subscriber("/imu_height",Int32,imu_callback, queue_size=10)
 rospy.Subscriber("/julius_result_text", String, julius_callback, queue_size=1)
 rospy.Subscriber("/motion_sensor", Bool, motion_sensor_callback, queue_size=1)
+
+
 
 
 status = os.system('amixer -D pulse sset Capture 0')
