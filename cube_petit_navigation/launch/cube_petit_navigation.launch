@@ -21,19 +21,19 @@
     <arg name="map_file" default="$(find cube_petit_navigation)/map/floor_27_2/3/map.yaml"/>
 
     <!-- <arg name="map_file" default="$(find cube_petit_navigation)/map/maker_fair/map.yaml"/> -->
-    <!-- <arg name="map_file" default="/home/gisen/test_map/27fmap.yaml"/> -->
+    <!-- <arg name="map_file" default="/home/gisen/map_24/map2/map.yaml"/> -->
 
 
     <!-- [EDIT] keepout map file name if you need -->
     <arg name="map_keepout_file" default="$(find cube_petit_navigation)/map/floor_27_2/3/map.yaml" />
     <!-- <arg name="map_keepout_file" default="$(find cube_petit_navigation)/map/maker_fair/map.yaml" /> -->
-    <!-- <arg name="map_keepout_file" default="/home/gisen/test_map/27fmap.yaml"/> -->
+    <!-- <arg name="map_keepout_file" default="/home/gisen/map_24/map2/map.yaml"/> -->
     <arg name="use_keepout" default="true" />
     <param name="map_server/map_file" value="$(arg map_file)" />
 
 
 
-
+    <!-- <node pkg="tf" type="static_transform_publisher" name="odom_tf" args="0 0 0 0 0 0 map odom 100" /> -->
 
     <!-- If "costmap_image = true" launch costmap_to_image node -->
     <arg name="costmap_image" default="false" />

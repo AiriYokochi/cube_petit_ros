@@ -129,6 +129,11 @@ def battery_callback(data):
     global battery_voltage
     battery_voltage = data.data
 
+def hotword_callback(data):
+    rospy.loginfo("hotword_callback")
+    text_to_jtalk('はーい！')
+
+
 # Class method2: joyCallback [TODO] MUTEX
 def callback(data):
     global julius_text
@@ -153,7 +158,7 @@ def callback(data):
         text_to_jtalk('こっち来てえ')
     elif data.buttons[5] == 1:    # R1
         rospy.loginfo("R1")
-        text_to_jtalk('ねえねえ')
+        text_to_jtalk('ソラジロー先輩、どこですか〜？')
     elif data.buttons[6] == 1:    # L2
         rospy.loginfo("L2")
     elif data.buttons[7] == 1:    # R2
@@ -205,7 +210,7 @@ def callback(data):
     elif data.buttons[9] == 1:    # OPTION
         text_to_jtalk('音声認識モード。ポンッ！')
         julius_text = ''
-        status = os.system('amixer -D pulse sset Capture 40000')
+        status = os.system('amixer -D pulse sset Capture 65536')
         rospy.loginfo('unmute mic')
         rospy.sleep(5.5)
         status = os.system('amixer -D pulse sset Capture 0')
@@ -318,6 +323,9 @@ rospy.Subscriber("/imu_height",Int32,imu_callback, queue_size=10)
 rospy.Subscriber("/julius_result_text", String, julius_callback, queue_size=1)
 rospy.Subscriber("/motion_sensor", Bool, motion_sensor_callback, queue_size=1)
 rospy.Subscriber("/gazebo_battery_monitor/battery_voltage", Float64, battery_callback, queue_size=1)
+
+rospy.Subscriber("/hotword_detector_ros/detect_word", String, hotword_callback, queue_size=1)
+
 
 publish = rospy.Publisher('/fan_on', Bool, queue_size=1)
 
