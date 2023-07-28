@@ -61,14 +61,14 @@
   <!-- <include file="$(find cube_facial_animation)/launch/web.launch"/> -->
 
   <!-- launch ARDUINO -->
-  <!-- <node name="rosserial_python" pkg="rosserial_python" type="serial_node.py" launch-prefix="nice -n 19">
-    <param name="port" value="/dev/ttyARDUINO"/>
+  <node name="rosserial_python" pkg="rosserial_python" type="serial_node.py" launch-prefix="nice -n 19">
+    <param name="port" value="/dev/ttyARDUINO_IR"/>
     <param name="baud" value="57600"/>
-  </node> -->
+  </node>
 
-  <!-- <node name="rosserial_python2" pkg="rosserial_python" type="serial_node.py" launch-prefix="nice -n 19">
+  <node name="rosserial_python2" pkg="rosserial_python" type="serial_node.py" launch-prefix="nice -n 19">
     <param name="port" value="/dev/ttyARDUINO_FAN"/>
     <param name="baud" value="57600"/>
-  </node> -->
+  </node>
 
 </launch>
