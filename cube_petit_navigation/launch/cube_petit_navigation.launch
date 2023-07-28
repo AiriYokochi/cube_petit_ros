@@ -4,7 +4,7 @@
   <rosparam command="load" file="$(arg map_info_file)" ns="map_info"/>
   <rosparam command="delete" param="map_info/building_id"/>
   <rosparam command="delete" param="map_info/floor_id"/> -->
-  <group ns="navigation">
+  <!-- <group ns="navigation"> -->
 
     <!--[EDIT] robot name-->
     <arg name="robot" default="cube_petit"/>
@@ -61,9 +61,9 @@
     </include>
 
     <group ns="rviz_topics_relay">
-      <node name="clicked_point_relay" pkg="topic_tools" type="relay" args="/clicked_point /navigation/clicked_point"/>
-      <node name="initialpose_relay" pkg="topic_tools" type="relay" args="/initialpose /navigation/initialpose"/>
-      <node name="simple_goal_relay" pkg="topic_tools" type="relay" args="/move_base_simple/goal /navigation/move_base_simple/goal"/>
+      <node name="clicked_point_relay" pkg="topic_tools" type="relay" args="/clicked_point /clicked_point"/>
+      <node name="initialpose_relay" pkg="topic_tools" type="relay" args="/initialpose /initialpose"/>
+      <node name="simple_goal_relay" pkg="topic_tools" type="relay" args="/move_base_simple/goal /move_base_simple/goal"/>
     </group>
 
 
@@ -74,12 +74,12 @@
       <!-- [EDIT] topic name of /odom -->
       <arg name="odom_topic" value="$(arg odom)" />
       <arg name="costmap_image" value="$(arg costmap_image)" />
-      <remap from="move_base_simple/goal" to="/move_base_simple/goal"/>
+      <!-- <remap from="move_base_simple/goal" to="/move_base_simple/goal"/>
       <remap from="initial_pose" to="/initial_pose"/>
-      <remap from="clicked_point" to="/clicked_point"/>
+      <remap from="clicked_point" to="/clicked_point"/> -->
 
     </include>
-  </group>
+  <!-- </group> -->
 
 
 </launch>
