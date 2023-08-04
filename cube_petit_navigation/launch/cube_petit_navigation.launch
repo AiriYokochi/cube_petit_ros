@@ -31,7 +31,7 @@
     <arg name="use_keepout" default="true" />
     <param name="map_server/map_file" value="$(arg map_file)" />
 
-
+    <!-- <rosparam command="load" file="$(arg map_info_file)" ns="map_info"/> -->
 
     <!-- <node pkg="tf" type="static_transform_publisher" name="odom_tf" args="0 0 0 0 0 0 map odom 100" /> -->
 
@@ -60,11 +60,11 @@
       <arg name="scan_topic" value="$(arg scan)"/>
     </include>
 
-    <group ns="rviz_topics_relay">
+    <!-- <group ns="rviz_topics_relay">
       <node name="clicked_point_relay" pkg="topic_tools" type="relay" args="/clicked_point /clicked_point"/>
       <node name="initialpose_relay" pkg="topic_tools" type="relay" args="/initialpose /initialpose"/>
       <node name="simple_goal_relay" pkg="topic_tools" type="relay" args="/move_base_simple/goal /move_base_simple/goal"/>
-    </group>
+    </group> -->
 
 
     <!-- move the robot -->
