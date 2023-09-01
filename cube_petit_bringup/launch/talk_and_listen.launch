@@ -7,6 +7,7 @@
   <include file="$(find cube_speech)/launch/speech_server.launch"/>
   <include file="$(find cube_petit_text_to_speech)/launch/cube_petit_text_to_speech.launch"/>
   <include file="$(find cube_petit_speech_to_text)/launch/cube_petit_speech_to_text.launch"/>
+  <include file="$(find speech_recognition_ros)/launch/efficientword_net_hotword_detector.launch"/>
 
 <!-- ハローワールド！5月14日にロスロボットパーティーに参加します！もっと可愛くなった僕と遊んでね！ -->
 
