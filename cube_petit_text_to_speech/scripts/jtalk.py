@@ -89,6 +89,7 @@ false_count = 0
 hotword_flag = 1
 motion_sensor_flag = 0
 imu_flag = 0
+mute_flag = 0
 
 
 get_julius_text_flag = 0
@@ -132,6 +133,49 @@ def battery_callback(data):
     global battery_voltage
     battery_voltage = data.data
 
+
+def recog_and_talk(arg_text):
+    global hotword_flag
+    global julius_text
+    rospy.loginfo("[jtalk.py] recog_and_talk")
+    talk_text = ''
+
+    if "コントローラ" in arg_text:
+        battery_status_result = subprocess.check_output('upower --show-info /org/freedesktop/UPower/devices/gaming_input_sony_controller_battery_88o03o4co2bo6fo06 | grep percentage| sed -e \'s/[^0-9]//g\'', shell=True)
+        num_str = str(battery_status_result)
+        num_str = re.sub(r'\D', '', num_str)
+        if num_str != '':
+            talk_text = "コントローラのバッテリ残量は" + num_str + "パーセントです"
+            text_to_jtalk(talk_text)
+        else:
+            talk_text = "コントローラが繋がっていません"
+            text_to_jtalk(talk_text)
+    elif ("何時" in arg_text) or ("時刻" in arg_text) or ("時間" in arg_text):
+        d = datetime.now()
+        talk_text = '今は%s月%s日、%s時%s分%s秒です。' % (d.month, d.day, d.hour, d.minute, d.second)
+        text_to_jtalk(talk_text)
+    elif "名前" in arg_text:
+        text_to_jtalk("僕の名前はキューブプチです。あなたの名前はなんですか")
+        julius_text = ''
+        rospy.sleep(5.5)
+        if julius_text != '':
+            talk_text = julius_text + "さんですね。素敵な名前ですね。"
+            text_to_jtalk(talk_text)
+        else:
+            text_to_jtalk("わかりませんでした。もう一度話しかけてね")
+            rospy.loginfo('[WARN] julius_text is none ')
+    elif ("電圧" in arg_text) or ("バッテリ" in arg_text):
+        talk_text = "バッテリの電圧は" + str(battery_voltage) + "です"
+        text_to_jtalk(talk_text)
+    elif ("扇風機" in arg_text) or ("ファン" in arg_text)or ("サーキュレーター" in arg_text):
+        talk_text = "おっけー"
+        text_to_jtalk(talk_text)
+        publish.publish(True)
+    else:
+        talk_text = julius_text + "ですね？"
+        text_to_jtalk(talk_text)
+    julius_text = ''
+
 def hotword_callback(data):
     global hotword_flag
     rospy.loginfo("hotword_callback")
@@ -142,72 +186,24 @@ def hotword_callback(data):
         if str(data.data) == "Cuboid":
             text_to_jtalk('僕の名前はキューブプチです')
         elif str(data.data) == "Cube-petit":
-            julius_text = ''
-            # status = os.system('amixer -D pulse sset Capture 0')
-            rospy.sleep(0.2)
             text_to_jtalk('はーい！なんですか？')
-            # julius_text = ''
-            # status = os.system('amixer -D pulse sset Capture 65536')
-            # rospy.loginfo('unmute mic')
-            rospy.sleep(8.5)
-            # status = os.system('amixer -D pulse sset Capture 0')
-            # rospy.loginfo('mute mic')
-            # rospy.sleep(0.5)
-            rospy.loginfo('julius_text:'+julius_text)
-            # status = os.system('amixer -D pulse sset Capture 65536')
-            # TODO julius_textをまつ
-            if julius_text != '':
-                if julius_text == "キューブプチ":
-                    text_to_jtalk("はぁあい！なんですか？")
-                elif julius_text == "キューボイド":
-                    text_to_jtalk("キューボイドは僕のお兄ちゃんの名前ですよ")
-                elif "コントローラ" in julius_text:
-                    julius_text = ''
-                    battery_status_result = subprocess.check_output('upower --show-info /org/freedesktop/UPower/devices/gaming_input_sony_controller_battery_88o03o4co2bo6fo06 | grep percentage| sed -e \'s/[^0-9]//g\'', shell=True)
-                    num_str = str(battery_status_result)
-                    num_str = re.sub(r'\D', '', num_str)
-                    if num_str != '':
-                        julius_text = "コントローラのバッテリ残量は" + num_str + "パーセントです"
-                        text_to_jtalk(julius_text)
-                    else:
-                        julius_text = "コントローラが繋がっていません"
-                        text_to_jtalk(julius_text)
-                elif ("何時" in julius_text) or ("時刻" in julius_text) or ("時間" in julius_text):
-                    d = datetime.now()
-                    phrase1 = '今は%s月%s日、%s時%s分%s秒です。' % (d.month, d.day, d.hour, d.minute, d.second)
-                    text_to_jtalk(phrase1)
-                elif "名前" in julius_text:
-                    text_to_jtalk("僕の名前はキューブプチです。あなたの名前はなんですか")
-                    julius_text = ''
-                    # status = os.system('amixer -D pulse sset Capture 40000')
-                    # rospy.loginfo('unmute mic')
-                    rospy.sleep(5.5)
-                    # status = os.system('amixer -D pulse sset Capture 0')
-                    # rospy.loginfo('mute mic')
-                    # rospy.sleep(0.5)
-                    if julius_text != '':
-                        julius_text = julius_text + "さんですね。素敵な名前ですね。"
-                        text_to_jtalk(julius_text)
-                    else:
-                        text_to_jtalk("わかりませんでした。もう一度話しかけてね")
-                        rospy.loginfo('[WARN] julius_text is none ')
-                elif ("電圧" in julius_text) or ("バッテリ" in julius_text):
-                    julius_text = "バッテリの電圧は" + str(battery_voltage) + "です"
-                    text_to_jtalk(julius_text)
-                elif ("扇風機" in julius_text) or ("ファン" in julius_text)or ("サーキュレーター" in julius_text):
-                    julius_text = "おっけー"
-                    text_to_jtalk(julius_text)
-                    publish.publish(True)
-                else:
-                    julius_text = julius_text + "ですね？"
-                    text_to_jtalk(julius_text)
-                julius_text = ''
-            else:
+            julius_text = ''
+            rospy.sleep(3.0)
+            count = 0
+            listen_flag = 0
+            while count < 5:
+                count += 1
+                rospy.sleep(1.0)
+                if julius_text != '':
+                    listen_flag = 1
+                    rospy.loginfo('julius_text:'+julius_text)
+                    recog_and_talk(julius_text)
+                    break
+            if listen_flag == 0:
                 text_to_jtalk("わかりませんでした。もう一度話しかけてね")
-                rospy.loginfo('[WARN] julius_text is none ')
-
+            julius_text != ''
+            rospy.loginfo('[WARN] julius_text is none ')
         hotword_flag = 1
-
 
 
 # Class method2: joyCallback [TODO] MUTEX
@@ -217,6 +213,7 @@ def callback(data):
     global imu_flag
     global battery_voltage
     global hotword_flag
+    global mute_flag
     if data.buttons[0] == 1:      # batu
         rospy.loginfo("X")
         text_to_jtalk('こんにちは')
@@ -247,12 +244,8 @@ def callback(data):
 
         hotword_flag = 0
         julius_text = ''
-        #status = os.system('amixer -D pulse sset Capture 40000')
-        #rospy.loginfo('unmute mic')
+        yasai_text = ''
         rospy.sleep(5.5)
-        #status = os.system('amixer -D pulse sset Capture 0')
-        #rospy.loginfo('mute mic')
-        #rospy.sleep(0.5)
         julius_text = julius_text.rstrip('です')
         julius_text = julius_text.rstrip('だよ')
         if julius_text != '':
@@ -260,7 +253,6 @@ def callback(data):
                 text_to_jtalk("僕は食べられないよう！")
             elif julius_text == "キューボイド":
                 text_to_jtalk("キューボイドは僕のお兄ちゃんの名前ですよ")
-                julius_text = julius_text + "ですね？"
             elif julius_text == "大根" or julius_text == "じゃがいも" or julius_text == "アスパラガス" or julius_text == "たけのこ":
                 # レンコン かぼちゃ アスパラ ブロッコリー
                 # アボカド
@@ -276,11 +268,11 @@ def callback(data):
                 # そら豆
                 # えんどう豆
                 # オクラ
-                julius_text = julius_text + "は僕も大好きです！"
-                text_to_jtalk(julius_text)
+                yasai_text = julius_text + "は僕も大好きです！"
+                text_to_jtalk(yasai_text)
             else:
-                julius_text = julius_text + "ですね？"
-                text_to_jtalk(julius_text)
+                yasai_text = julius_text + "ですね？"
+                text_to_jtalk(yasai_text)
             julius_text = ''
         else:
             text_to_jtalk_sadness("わかりませんでした")
@@ -291,73 +283,36 @@ def callback(data):
         hotword_flag = 0
         text_to_jtalk('音声認識モード。ポンッ！')
         julius_text = ''
-        # status = os.system('amixer -D pulse sset Capture 65536')
-        # rospy.loginfo('unmute mic')
-        rospy.sleep(8.5)
-        # status = os.system('amixer -D pulse sset Capture 0')
-        # rospy.loginfo('mute mic')
-        # rospy.sleep(0.5)
-        rospy.loginfo('julius_text:'+julius_text)
-        if julius_text != '':
-            if julius_text == "キューブプチ":
-                text_to_jtalk("はぁあい！なんですか？")
-            elif julius_text == "キューボイド":
-                text_to_jtalk("キューボイドは僕のお兄ちゃんの名前ですよ")
-            elif "コントローラ" in julius_text:
-                julius_text = ''
-                battery_status_result = subprocess.check_output('upower --show-info /org/freedesktop/UPower/devices/gaming_input_sony_controller_battery_88o03o4co2bo6fo06 | grep percentage| sed -e \'s/[^0-9]//g\'', shell=True)
-                num_str = str(battery_status_result)
-                num_str = re.sub(r'\D', '', num_str)
-                if num_str != '':
-                    julius_text = "コントローラのバッテリ残量は" + num_str + "パーセントです"
-                    text_to_jtalk(julius_text)
-                else:
-                    julius_text = "コントローラが繋がっていません"
-                    text_to_jtalk(julius_text)
-            elif ("何時" in julius_text) or ("時刻" in julius_text) or ("時間" in julius_text):
-                d = datetime.now()
-                phrase1 = '今は%s月%s日、%s時%s分%s秒です。' % (d.month, d.day, d.hour, d.minute, d.second)
-                text_to_jtalk(phrase1)
-            elif "名前" in julius_text:
-                text_to_jtalk("僕の名前はキューブプチです。あなたの名前はなんですか")
-                julius_text = ''
-                # status = os.system('amixer -D pulse sset Capture 40000')
-                # rospy.loginfo('unmute mic')
-                rospy.sleep(5.5)
-                # status = os.system('amixer -D pulse sset Capture 0')
-                # rospy.loginfo('mute mic')
-                # rospy.sleep(0.5)
-                if julius_text != '':
-                    julius_text = julius_text + "さんですね。素敵な名前ですね。"
-                    text_to_jtalk(julius_text)
-                else:
-                    text_to_jtalk("わかりませんでした。もう一度話しかけてね")
-                    rospy.loginfo('[WARN] julius_text is none ')
-            elif ("電圧" in julius_text) or ("バッテリ" in julius_text):
-                julius_text = "バッテリの電圧は" + str(battery_voltage) + "です"
-                text_to_jtalk(julius_text)
-            elif ("扇風機" in julius_text) or ("ファン" in julius_text)or ("サーキュレーター" in julius_text):
-                julius_text = "おっけー"
-                text_to_jtalk(julius_text)
-                publish.publish(True)
-            else:
-                julius_text = julius_text + "ですね？"
-                text_to_jtalk(julius_text)
-            julius_text = ''
-        else:
-            text_to_jtalk_sadness("わかりませんでした")
+        rospy.sleep(3.0)
+        count = 0
+        listen_flag = 0
+        while count < 5:
+            count += 1
+            rospy.sleep(1.0)
+            if julius_text != '':
+                listen_flag = 1
+                rospy.loginfo('julius_text:'+julius_text)
+                recog_and_talk(julius_text)
+                break
+        if listen_flag == 0:
+            text_to_jtalk("わかりませんでした。もう一度話しかけてね")
+        julius_text != ''
+        rospy.loginfo('[WARN] julius_text is none ')
         hotword_flag = 1
     elif data.buttons[10] == 1:    # PS
         rospy.loginfo("PS Button")
+        if mute_flag == 0:
         # マイクミュート [TODO]ミュート　ミュート解除
-        text_to_jtalk("マイクをミュートします")
-        status = os.system('amixer -D pulse sget Capture')
-        rospy.loginfo('mute mic')
-        rospy.loginfo(str(status))
-        rospy.loginfo(status)
-
-        # text_to_jtalk("マイクのミュートを解除します")
-        # status = os.system('amixer -D pulse sset Capture 40000')
+            text_to_jtalk("マイクをミュートします")
+            status = os.system('amixer -D pulse sget Capture')
+            rospy.loginfo('mute mic')
+            rospy.loginfo(str(status))
+            rospy.loginfo(status)
+            mute_flag = 1
+        elif mute_flag == 1:
+            text_to_jtalk("マイクのミュートを解除します")
+            status = os.system('amixer -D pulse sset Capture 80%')
+            mute_flag = 0
     elif data.buttons[11] == 1:    # Left Stick
         rospy.loginfo("Left Stick")
         if(imu_flag==0):
@@ -391,7 +346,6 @@ def callback(data):
 # start
 
 # talk test
-rospy.loginfo('テストテスト。おはようございます。')
 phrase = 'テストテスト。おはようございます。'
 result = speaker(
     phrase, speech_method, emotion, None, pitch, speed, volume).result

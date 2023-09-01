@@ -35,7 +35,7 @@ class juliusSpeechToText:
     def pkill_julius(self):
         p = subprocess.Popen(['pgrep', '-l' , 'julius'], stdout=subprocess.PIPE)
         out, err = p.communicate()
-        for line in out.splitlines():        
+        for line in out.splitlines():
             line = bytes.decode(line)
             pid = int(line.split(None, 1)[0])
             os.kill(pid, signal.SIGKILL)
@@ -73,14 +73,12 @@ class juliusSpeechToText:
 def callback(data):
     rospy.loginfo('Julius Start: 音声認識結果だよ')
     publish.publish(u'音声認識結果だよ')
-    # status = os.system('amixer -D pulse sset Capture 65536')
-    # status = os.system('amixer -D pulse sset Capture 0')
 
 def main():
     julius = juliusSpeechToText()
     rospy.loginfo("Juliusによる音声認識を開始")
-    status = os.system('amixer -D pulse sset Capture 0')
-    rospy.loginfo('マイクオフ:'+ str(status))
+#     status = os.system('amixer -D pulse sset Capture 0')
+#     rospy.loginfo('マイクオフ:'+ str(status))
     julius.textStreaming()
     rospy.spin()
 
