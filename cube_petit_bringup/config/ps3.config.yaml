@@ -1,15 +1,86 @@
+# Joy L Stick (0:Right)
 axis_linear: 1
-scale_linear: 0.5
-scale_linear_turbo: 1.5
 
+# ZENGO 
+scale_linear: 0.3
+scale_linear_turbo: 0.7
+
+# KAITEN
 axis_angular: 0
 scale_angular: 5.0
 
+# TURBO
 enable_button: 1  # batu button
-enable_turbo_button: 10  # L1 shoulder button
+enable_turbo_button: 6  # L1 shoulder button
 
 # 0:select  1:leftJOY   2:rightJOY  3:start
 # 4:ue      5:migi      6:sita      7:hidari
 # 10:L1      11:R1      8:L2        9:R2
 # 15:sikaku 14:batu,   13:maru,     12:sankaku
 # 16:ps
+
+    # if data.buttons[0] == 1:      # batu
+    #     rospy.loginfo("X")
+    # elif data.buttons[1] == 1:    # maru
+    #     rospy.loginfo("○")
+    # elif data.buttons[2] == 1:    # sankaku
+    #     rospy.loginfo("△")
+    # elif data.buttons[3] == 1:    # sikaku
+    #     rospy.loginfo("□")
+    # elif data.buttons[4] == 1:    # L1
+    #     rospy.loginfo("L1")
+    #     text_to_jtalk('こっち来てえ') 
+    # elif data.buttons[5] == 1:    # R1
+    #     rospy.loginfo("R1")
+    #     text_to_jtalk_shout('ねえねえ')
+    # elif data.buttons[6] == 1:    # L2
+    #     rospy.loginfo("L2")
+    # elif data.buttons[7] == 1:    # R2
+    #     rospy.loginfo("R2")
+    # elif data.buttons[8] == 1:    # SHARE
+    #     rospy.loginfo("SHARE")
+    #     text_to_jtalk('好きな野菜はなんですか〜？')
+    #     text_to_jtalk('ポンッ！')
+    #     julius_text = ''
+    #     status = os.system('amixer -D pulse sset Capture 40000')
+    #     rospy.loginfo('unmute mic')
+    #     rospy.sleep(5.5)
+    #     status = os.system('amixer -D pulse sset Capture 0')
+    #     rospy.loginfo('mute mic')
+    #     rospy.sleep(0.5)
+    #     if julius_text != '':
+    #         if julius_text == "キューブプチ":
+    #             text_to_jtalk("僕は食べられないよう！")
+    #         elif julius_text == "キューボイド":
+    #             text_to_jtalk("キューボイドは僕のお兄ちゃんの名前ですよ")
+    #             julius_text = julius_text + "ですね？"
+    #         else:
+    #             julius_text = julius_text + "ですね？"
+    #             text_to_jtalk(julius_text)
+    #         julius_text = ''
+    #     else:
+    #         text_to_jtalk_sadness("わかりませんでした")
+
+
+    # elif data.buttons[9] == 1:    # OPTION
+    #     text_to_jtalk('音声認識モード。ポンッ！')
+    #     julius_text = ''
+    #     status = os.system('amixer -D pulse sset Capture 40000')
+    #     rospy.loginfo('unmute mic')
+    #     rospy.sleep(5.5)
+    #     status = os.system('amixer -D pulse sset Capture 0')
+    #     rospy.loginfo('mute mic')
+    #     rospy.sleep(0.5)
+    #     if julius_text != '':
+    #         if julius_text == "キューブプチ":
+    #             text_to_jtalk("はーい！何ですか？")
+    #         elif julius_text == "キューボイド":
+    #             text_to_jtalk("キューボイドは僕のお兄ちゃんの名前ですよ")
+    #         else:
+    #             julius_text = julius_text + "ですね？"
+    #             text_to_jtalk(julius_text)
+    #         julius_text = ''
+    #     else:
+    #         text_to_jtalk_sadness("わかりませんでした")
+    # elif data.buttons[10] == 1:    # PS
+    #     rospy.loginfo("PS Button")

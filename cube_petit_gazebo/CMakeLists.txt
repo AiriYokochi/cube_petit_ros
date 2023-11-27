@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   message_generation
   std_srvs
   brass_gazebo_battery
+  
 )
 
 add_service_files(

@@ -1,7 +1,7 @@
 # Publish all joint states -----------------------------------
 joint_state_controller:
   type: joint_state_controller/JointStateController
-  publish_rate: 100  
+  publish_rate: 100
 
 # Diff drive controller --------------------------------------
 diff_drive_controller:
@@ -48,5 +48,5 @@ diff_drive_controller:
   cmd_vel_timeout: 0.25
   # Base frame_id
   base_frame_id: base_link
-  odom_frame_id: /odom_2d
+  odom_frame_id: /odom
   # enable_odom_tf: false

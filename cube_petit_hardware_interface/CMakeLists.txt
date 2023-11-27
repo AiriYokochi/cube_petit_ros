@@ -19,6 +19,7 @@ find_package(catkin REQUIRED COMPONENTS
   hardware_interface
   controller_manager
   control_toolbox
+  can_msgs
 )
 
 # Macro to generate ROS node with "add_executable" and "add_library"
